@@ -40,6 +40,8 @@ class Preprocess:
         for sentence in sentences:
             for sent in re.split("\\s+", sentence.strip()):
                 cur = "B"
+                # 用"B"的出现次数，表示训练的句子数量
+                self.wordcnt[cur] += 1
                 for ch in sent:
                     self.wordcnt[cur + ch] += 1
                     self.wordcnt[ch] += 1
@@ -59,7 +61,9 @@ class Preprocess:
 
     # 读取汉字计数
     def load_word_cnt(self):
-        self.wordcnt = json.load(open('wordcnt.json'))
+        self.wordcnt = defaultdict(int)
+        for k, v in json.load(open('wordcnt.json')).items():
+            self.wordcnt[k] = v
 
 
 def cut_sentences(content):
@@ -74,13 +78,17 @@ if __name__ == "__main__":
     prep = Preprocess()
     pinyin_word_file = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\拼音汉字表.txt"
     filter_path = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\一二级汉字表.txt"
-    train_path = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\sina_news_gbk\\2016-02.txt"
+    train_path = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\sina_news_gbk\\"
     prep.read_pinyin2word(pinyin_word_file, filter_path)
     print(prep.pinyin2word['beng'][0])
 
-    prep.read_train_file(train_path)
+    prep.read_train_file(train_path + "2016-02.txt")
+    for month in range(4, 12):
+        prep.read_train_file(train_path + "2016-" + str(month).zfill(2) + ".txt")
+        print("2016-" + str(month).zfill(2) + ".txt" + " finish loading")
+
     # prep.load_word_cnt()
-    print(prep.wordcnt["中"])
-    print(prep.wordcnt["其中"])
+    # print(prep.wordcnt["中"])
+    # print(prep.wordcnt["其中"])
     print(list(prep.wordcnt.keys())[:10])
-    # prep.save_word_cnt()
+    prep.save_word_cnt()
