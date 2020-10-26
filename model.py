@@ -1,21 +1,19 @@
 from preprocess import Preprocess
 from tqdm import tqdm
+from param import args
 
 class Model:
     def __init__(self):
         self.prep = Preprocess()
-        self._init_prep()
+        self.train()
 
-    def _init_prep(self):
-        pinyin_word_file = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\拼音汉字表.txt"
-        filter_path = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\一二级汉字表.txt"
-        self.prep.read_pinyin2word(pinyin_word_file, filter_path)
+    def train(self):
+        self.prep.read_pinyin2word(args.pinyin_word_file, args.filter_path)
         self.prep.load_word_cnt()
 
-        # train_path = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\sina_news_gbk\\"
-        # self.prep.read_train_file(train_path + "2016-02.txt")
+        # self.prep.read_train_file(args.train_path + "2016-02.txt")
         # for month in tqdm(range(4, 12)):
-        #     self.prep.read_train_file(train_path + "2016-" + str(month).zfill(2) + ".txt")
+        #     self.prep.read_train_file(args.train_path + "2016-" + str(month).zfill(2) + ".txt")
         # self.prep.save_word_cnt()
 
     def predict_sentence(self, inputs):
@@ -32,11 +30,13 @@ class Model:
             cur = pinyin2word[max_index]
         return output
 
-    def predict(self, input_path):
+    def predict(self, input_path, output_path):
+        out = open(output_path, "w")
         with open(input_path) as fd:
             for line in fd.readlines():
                 output = self.predict_sentence(line)
-                print(output)
+                out.write(output + "\n")
+        out.close()
 
 
 if __name__ == "__main__":
@@ -44,6 +44,5 @@ if __name__ == "__main__":
     # print(model.prep.pinyin2word["ji"])
     # print(model.prep.wordcnt["学去"])
     # print(model.prep.wordcnt["学区"])
-    input_file = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\input.txt"
-    output_file = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\output.txt"
-    model.predict(input_file)
+
+    model.predict(args.input_file, args.output_file)

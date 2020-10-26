@@ -1,6 +1,7 @@
 from collections import defaultdict
 import json
 import re
+from param import args
 import codecs
 import chardet
 
@@ -57,12 +58,12 @@ class Preprocess:
 
     # 保存汉字计数
     def save_word_cnt(self):
-        json.dump(self.wordcnt, open('wordcnt.json', "w"), ensure_ascii=False, indent=4)
+        json.dump(self.wordcnt, open(args.wordcnt_file, "w"), ensure_ascii=False, indent=4)
 
     # 读取汉字计数
     def load_word_cnt(self):
         self.wordcnt = defaultdict(int)
-        for k, v in json.load(open('wordcnt.json')).items():
+        for k, v in json.load(open(args.wordcnt_file)).items():
             self.wordcnt[k] = v
 
 
@@ -76,15 +77,12 @@ def cut_sentences(content):
 
 if __name__ == "__main__":
     prep = Preprocess()
-    pinyin_word_file = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\拼音汉字表.txt"
-    filter_path = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\一二级汉字表.txt"
-    train_path = "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\sina_news_gbk\\"
-    prep.read_pinyin2word(pinyin_word_file, filter_path)
-    print(prep.pinyin2word['beng'][0])
+    prep.read_pinyin2word(args.pinyin_word_file, args.filter_path)
+    print(prep.pinyin2word['beng'])
 
-    prep.read_train_file(train_path + "2016-02.txt")
+    prep.read_train_file(args.train_path + "2016-02.txt")
     for month in range(4, 12):
-        prep.read_train_file(train_path + "2016-" + str(month).zfill(2) + ".txt")
+        prep.read_train_file(args.train_path + "2016-" + str(month).zfill(2) + ".txt")
         print("2016-" + str(month).zfill(2) + ".txt" + " finish loading")
 
     # prep.load_word_cnt()
