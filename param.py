@@ -23,6 +23,8 @@ parser.add_argument('--output_file', type=str,
                     # "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\output.txt"
                     default="output.txt",
                     help='output sentence file')
-
+parser.add_argument('--type', type=str,
+                    default="bigram",
+                    help='model type(bigram or trigram)')
 
 args = parser.parse_args()

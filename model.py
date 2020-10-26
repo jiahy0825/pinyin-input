@@ -19,15 +19,27 @@ class Model:
     def predict_sentence(self, inputs):
         pinyins = inputs.strip().split(" ")
         output = ""
-        cur = "B"
-        for pinyin in pinyins:
-            pinyin2word = self.prep.pinyin2word[pinyin]
-            prob = [0] * len(pinyin2word)
-            for idx, word in enumerate(pinyin2word):
-                prob[idx] = self.prep.wordcnt[cur + word] / (self.prep.wordcnt[cur] + 1)
-            max_index = prob.index(max(prob))
-            output += pinyin2word[max_index]
-            cur = pinyin2word[max_index]
+        if args.type == "bigram":
+            cur = "B"
+            for pinyin in pinyins:
+                pinyin2word = self.prep.pinyin2word[pinyin]
+                prob = [0] * len(pinyin2word)
+                for idx, word in enumerate(pinyin2word):
+                    prob[idx] = self.prep.wordcnt[cur + word] / (self.prep.wordcnt[cur] + 1)
+                max_index = prob.index(max(prob))
+                output += pinyin2word[max_index]
+                cur = pinyin2word[max_index]
+        elif args.type == "trigram":
+            c1, c2 = "B1", "B2"
+            for pinyin in pinyins:
+                pinyin2word = self.prep.pinyin2word[pinyin]
+                prob = [0] * len(pinyin2word)
+                for idx, word in enumerate(pinyin2word):
+                    prob[idx] = self.prep.wordcnt[c1 + c2 + word] / (self.prep.wordcnt[c1 + c2] + 1)
+                max_index = prob.index(max(prob))
+                output += pinyin2word[max_index]
+                c1, c2 = c2, pinyin2word[max_index]
+
         return output
 
     def predict(self, input_path, output_path):

@@ -40,13 +40,21 @@ class Preprocess:
         # 此句子中可能有空格
         for sentence in sentences:
             for sent in re.split("\\s+", sentence.strip()):
-                cur = "B"
-                # 用"B"的出现次数，表示训练的句子数量
-                self.wordcnt[cur] += 1
-                for ch in sent:
-                    self.wordcnt[cur + ch] += 1
-                    self.wordcnt[ch] += 1
-                    cur = ch
+                if args.type == "bigram":
+                    cur = "B"
+                    # 用"B"的出现次数，表示训练的句子数量
+                    self.wordcnt[cur] += 1
+                    for ch in sent:
+                        self.wordcnt[cur + ch] += 1
+                        self.wordcnt[ch] += 1
+                        cur = ch
+                elif args.type == "trigram":
+                    c1, c2 = "B1", "B2"
+                    self.wordcnt[c1 + c2] += 1
+                    for ch in sent:
+                        self.wordcnt[c1 + c2 + ch] += 1
+                        self.wordcnt[c2 + ch] += 1
+                        c1, c2 = c2, ch
 
     # 读取训练数据
     def read_train_file(self, path):
@@ -58,12 +66,12 @@ class Preprocess:
 
     # 保存汉字计数
     def save_word_cnt(self):
-        json.dump(self.wordcnt, open(args.wordcnt_file, "w"), ensure_ascii=False, indent=4)
+        json.dump(self.wordcnt, open(args.type + "_" + args.wordcnt_file, "w"), ensure_ascii=False, indent=4)
 
     # 读取汉字计数
     def load_word_cnt(self):
         self.wordcnt = defaultdict(int)
-        for k, v in json.load(open(args.wordcnt_file)).items():
+        for k, v in json.load(open(args.type + "_" + args.wordcnt_file)).items():
             self.wordcnt[k] = v
 
 
