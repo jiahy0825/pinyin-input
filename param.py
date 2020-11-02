@@ -13,7 +13,7 @@ parser.add_argument('--train_path', type=str,
                     default="D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\sina_news_gbk\\",
                     help='train sentence')
 parser.add_argument('--wordcnt_file', type=str,
-                    default="wordcnt.json",
+                    default="pinyin_wordcnt.json",
                     help='file to save word_cnt')
 parser.add_argument('--input_file', type=str,
                     # "D:\研二上课程\人工智能\第一次作业-拼音输入法\拼音输入法作业\拼音汉字表_12710172\input.txt"

@@ -3,7 +3,10 @@ import json
 import re
 from param import args
 import codecs
-import chardet
+from tqdm import tqdm
+from pypinyin import pinyin, lazy_pinyin
+import pypinyin
+
 
 class Preprocess:
     def __init__(self):
@@ -13,8 +16,8 @@ class Preprocess:
         self.blacklist = set()
 
     # 读取拼音到汉字映射
-    def read_pinyin2word(self, path, filtpath):
-        with open(filtpath) as fd:
+    def read_pinyin2word(self, path, filterpath):
+        with open(filterpath) as fd:
             for line in fd.readlines():
         # for line in open(filtpath, mode="r", encoding="utf8", errors="ignore"):
                 for word in line:
@@ -40,29 +43,41 @@ class Preprocess:
         # 此句子中可能有空格
         for sentence in sentences:
             for sent in re.split("\\s+", sentence.strip()):
+                pinyin = lazy_pinyin(sent, style=pypinyin.NORMAL)
                 if args.type == "bigram":
                     cur = "B"
                     # 用"B"的出现次数，表示训练的句子数量
                     self.wordcnt[cur] += 1
-                    for ch in sent:
-                        self.wordcnt[cur + ch] += 1
-                        self.wordcnt[ch] += 1
-                        cur = ch
+                    for idx, ch in enumerate(sent):
+                        self.wordcnt[cur + pinyin[idx] + ch] += 1
+                        self.wordcnt[pinyin[idx] + ch] += 1
+                        cur = pinyin[idx] + ch
                 elif args.type == "trigram":
                     c1, c2 = "B1", "B2"
                     self.wordcnt[c1 + c2] += 1
-                    for ch in sent:
-                        self.wordcnt[c1 + c2 + ch] += 1
-                        self.wordcnt[c2 + ch] += 1
-                        c1, c2 = c2, ch
+                    for idx, ch in enumerate(sent):
+                        self.wordcnt[c1 + c2 + pinyin[idx] + ch] += 1
+                        self.wordcnt[c2 + pinyin[idx] + ch] += 1
+                        c1, c2 = c2, pinyin[idx] + ch
 
     # 读取训练数据
     def read_train_file(self, path):
         with open(path) as fd:
-            for line in fd.readlines():
+            for line in tqdm(fd.readlines()):
                 news = json.loads(line)
                 self.train(news["title"])
                 self.train(news["html"])
+            # try:
+            #     with tqdm(fd.readlines()) as t:
+            #         for line in t:
+            #             news = json.loads(line)
+            #             self.train(news["title"])
+            #             self.train(news["html"])
+            # except KeyboardInterrupt:
+            #     t.close()
+            #     raise
+            # t.close()
+
 
     # 保存汉字计数
     def save_word_cnt(self):
@@ -88,10 +103,12 @@ if __name__ == "__main__":
     prep.read_pinyin2word(args.pinyin_word_file, args.filter_path)
     print(prep.pinyin2word['beng'])
 
+    print("2016-" + str("02").zfill(2) + ".txt" + " begin loading")
     prep.read_train_file(args.train_path + "2016-02.txt")
-    for month in range(4, 12):
+    for month in tqdm(range(4, 12)):
+        print("2016-" + str(month).zfill(2) + ".txt" + " begin loading")
         prep.read_train_file(args.train_path + "2016-" + str(month).zfill(2) + ".txt")
-        print("2016-" + str(month).zfill(2) + ".txt" + " finish loading")
+
 
     # prep.load_word_cnt()
     # print(prep.wordcnt["中"])
