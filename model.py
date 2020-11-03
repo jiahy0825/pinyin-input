@@ -87,7 +87,7 @@ class Model:
                         prob[idx] = self.prep.wordcnt[b1word + b2word + pinyin + word] / (self.prep.wordcnt[b1word + b2word] + 1)
                     prob = softmax(prob)
                     for i in range(len(pinyin2word)):
-                        if p * prob[i] > dp_cur[i][2]:
+                        if p * prob[i] > dp_cur[i][3]:
                             dp_cur[i] = (dp_cur[i][1], pinyin + pinyin2word[i], word_idx, p * prob[i])
                 dp.append(dp_cur)
         if args.type == "bigram":
@@ -125,7 +125,7 @@ class Model:
                     tot += 1
                 else:
                     output = self.predict_sentence(line.strip())
-                    # output = self.hmm_predict_sentence(line)
+                    # output = self.hmm_predict_sentence(line.strip())
                     print(line.strip())
                     print(output)
                     out.write(output + "\n")
