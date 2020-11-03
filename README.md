@@ -27,7 +27,7 @@ Pinyin input method: HomeWork1 of Artificial Intelligence Lesson
 
 #### 1.2 开源代码
 
-- github链接：https://github.com/jiahy0825/pinyin-input（代码，不包含统计好的基于字的计数）
+- github链接（代码，不包含统计好的基于字的计数）：https://github.com/jiahy0825/pinyin-input
 - 全部预训练字计数：以json文件保存，在作业附件的压缩包中
 
 ### 二、算法思路与实现
