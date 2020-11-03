@@ -19,12 +19,13 @@ class Model:
 
     def train(self):
         self.prep.read_pinyin2word(args.pinyin_word_file, args.filter_path)
-        self.prep.load_word_cnt()
-
-        # self.prep.read_train_file(args.train_path + "2016-02.txt")
-        # for month in tqdm(range(4, 12)):
-        #     self.prep.read_train_file(args.train_path + "2016-" + str(month).zfill(2) + ".txt")
-        # self.prep.save_word_cnt()
+        if args.pretrain:
+            self.prep.load_word_cnt()
+        else:
+            self.prep.read_train_file(args.train_path + "2016-02.txt")
+            for month in tqdm(range(4, 12)):
+                self.prep.read_train_file(args.train_path + "2016-" + str(month).zfill(2) + ".txt")
+            self.prep.save_word_cnt()
 
     def predict_sentence(self, inputs):
         pinyins = inputs.strip().split(" ")
@@ -123,8 +124,8 @@ class Model:
                         succ += 1
                     tot += 1
                 else:
-                    # output = self.predict_sentence(line.strip())
-                    output = self.hmm_predict_sentence(line)
+                    output = self.predict_sentence(line.strip())
+                    # output = self.hmm_predict_sentence(line)
                     print(line.strip())
                     print(output)
                     out.write(output + "\n")
@@ -137,6 +138,7 @@ if __name__ == "__main__":
     # print(model.prep.wordcnt["学去"])
     # print(model.prep.wordcnt["学区"])
 
-    # model.predict(args.input_file, args.output_file)
+    model.predict(args.input_file, args.output_file)
 
-    model.test("test.txt", args.output_file)
+    # 用来测试《输入法参考测试集》
+    # model.test("test.txt", args.output_file)

@@ -24,7 +24,9 @@ parser.add_argument('--output_file', type=str,
                     default="output.txt",
                     help='output sentence file')
 parser.add_argument('--type', type=str,
-                    default="bigram",
+                    default="trigram",
                     help='model type(bigram or trigram)')
+parser.add_argument('--pretrain', type=int, default=1,
+                    help='finish count word')
 
 args = parser.parse_args()
